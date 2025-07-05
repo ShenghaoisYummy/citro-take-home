@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_CONFIG } from '../config/api';
 
+// Define the interfaces for the movie data
 export interface Movie {
   id: number;
   title: string;
@@ -18,6 +19,7 @@ export interface Movie {
   video: boolean;
 }
 
+// Define the interface for the movie details
 export interface MovieDetails extends Movie {
   runtime: number;
   genres: { id: number; name: string }[];
@@ -25,6 +27,7 @@ export interface MovieDetails extends Movie {
   spoken_languages: { iso_639_1: string; name: string }[];
 }
 
+// Define the interface for the search response
 export interface SearchResponse {
   page: number;
   results: Movie[];
@@ -32,6 +35,7 @@ export interface SearchResponse {
   total_results: number;
 }
 
+// Create the axios instance for the movie API
 const movieApi = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   params: {
@@ -39,6 +43,7 @@ const movieApi = axios.create({
   },
 });
 
+// Define the movie service
 export const movieService = {
   searchMovies: async (query: string, page: number = 1): Promise<SearchResponse> => {
     const response = await movieApi.get('/search/movie', {
@@ -47,11 +52,13 @@ export const movieService = {
     return response.data;
   },
 
+  // Get the details of a movie
   getMovieDetails: async (movieId: number): Promise<MovieDetails> => {
     const response = await movieApi.get(`/movie/${movieId}`);
     return response.data;
   },
 
+  // Get the image URL for a movie
   getImageUrl: (path: string | null, size: string = 'w500'): string | null => {
     if (!path) return null;
     return `${API_CONFIG.IMAGE_BASE_URL}/${size}${path}`;
