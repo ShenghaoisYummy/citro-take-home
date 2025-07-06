@@ -38,8 +38,8 @@ export interface SearchResponse {
 // Create the axios instance for the movie API
 const movieApi = axios.create({
   baseURL: API_CONFIG.BASE_URL,
-  params: {
-    api_key: API_CONFIG.API_KEY,
+  headers: {
+    Authorization: `Bearer ${API_CONFIG.ACCESS_TOKEN}`,
   },
 });
 
