@@ -43,7 +43,7 @@ const movieApi = axios.create({
   },
 });
 
-// Define the movie service
+// Define the movie service, serch moive by title
 export const movieService = {
   searchMovies: async (query: string, page: number = 1): Promise<SearchResponse> => {
     const response = await movieApi.get('/search/movie', {
