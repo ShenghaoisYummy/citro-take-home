@@ -9,9 +9,13 @@ import { Error } from '../../components/Error';
 import { Container } from '../../components/Container';
 
 export default function MovieDetailsScreen() {
+  // get the id from the url
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  // use the router to navigate back
   const router = useRouter();
 
+  // use the useQuery hook to get the movie details
   const {
     data: movie,
     isLoading,

@@ -1,7 +1,17 @@
 module.exports = {
-  preset: 'jest-expo',
-  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|expo|@expo|@unimodules|unimodules|sentry-expo|native-base|react-navigation)',
+  testEnvironment: 'node',
+  setupFiles: ['<rootDir>/jest.globals.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  transformIgnorePatterns: ['node_modules/(?!(jest-)?react-native|@react-native|@tanstack)'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+    '^expo$': '<rootDir>/__mocks__/expo.js',
+  },
+  collectCoverageFrom: [
+    '**/*.{js,jsx,ts,tsx}',
+    '!**/coverage/**',
+    '!**/node_modules/**',
+    '!**/babel.config.js',
+    '!**/jest.setup.js',
   ],
 };
