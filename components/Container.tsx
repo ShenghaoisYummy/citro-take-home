@@ -3,7 +3,13 @@ import { View } from 'react-native';
 
 export const Container = ({ children }: { children: React.ReactNode }) => {
   return (
-    <View className="m-6 flex-1">
+    <View
+      style={{
+        flex: 1,
+        width: '33.333333%',
+        alignSelf: 'center',
+        marginVertical: 24,
+      }}>
       {React.Children.map(children, (child, index) => (React.isValidElement(child) ? child : null))}
     </View>
   );
