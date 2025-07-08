@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+} from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,14 +16,12 @@ import { Loading } from '../../components/Loading';
 import { Error } from '../../components/Error';
 import { Container } from '../../components/Container';
 
-export default function MovieDetailsScreen() {
-  // get the id from the url
-  const { id } = useLocalSearchParams<{ id: string }>();
+const { width } = Dimensions.get('window');
 
-  // use the router to navigate back
+export default function MovieDetailsScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
-  // use the useQuery hook to get the movie details
   const {
     data: movie,
     isLoading,
@@ -44,74 +50,152 @@ export default function MovieDetailsScreen() {
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
   const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
 
+  const headerButtonStyle = Platform.select({
+    web: {
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      backdropFilter: 'blur(8px)',
+    },
+    default: {
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+  });
+
+  const posterShadow = Platform.select({
+    web: { boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' },
+    default: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+  });
+
+  const backdropOverlay = Platform.select({
+    web: {
+      background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
+    },
+    default: {
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+  });
+
   return (
     <Container>
       <Stack.Screen
         options={{
-          title: movie.title,
+          title: '',
+          headerTransparent: true,
+          headerStyle: { backgroundColor: 'transparent' },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#000" />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="rounded-full p-2"
+              style={headerButtonStyle}>
+              <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
           ),
         }}
       />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {backdropUrl && (
-          <Image source={{ uri: backdropUrl }} className="h-64 w-full" resizeMode="cover" />
-        )}
+      <ScrollView showsVerticalScrollIndicator={false} className="bg-gray-50">
+        <View className="relative">
+          {backdropUrl && (
+            <Image source={{ uri: backdropUrl }} className="h-80 w-full" resizeMode="cover" />
+          )}
+          <View className="absolute inset-0" style={backdropOverlay} />
 
-        <View className="p-4">
-          <View className="mb-4 flex-row">
-            {posterUrl && (
-              <Image
-                source={{ uri: posterUrl }}
-                className="mr-4 h-48 w-32 rounded-lg"
-                resizeMode="cover"
-              />
-            )}
+          <View className="absolute bottom-0 left-0 right-0 p-6">
+            <View className="flex-row items-end">
+              {posterUrl && (
+                <View className="mr-4 rounded-xl" style={posterShadow}>
+                  <Image
+                    source={{ uri: posterUrl }}
+                    className="h-48 w-32 rounded-xl border-2 border-white"
+                    resizeMode="cover"
+                  />
+                </View>
+              )}
 
-            <View className="flex-1">
-              <Text className="mb-2 text-2xl font-bold text-gray-900">{movie.title}</Text>
+              <View className="flex-1">
+                <Text className="mb-2 text-2xl font-bold leading-tight text-white">
+                  {movie.title}
+                </Text>
 
-              <View className="mb-2 flex-row items-center">
-                <Ionicons name="star" size={16} color="#fbbf24" />
-                <Text className="ml-1 text-sm text-gray-600">
-                  {movie.vote_average.toFixed(1)} ({movie.vote_count} votes)
+                <View className="mb-2 flex-row items-center">
+                  <View className="mr-3 flex-row items-center rounded-full bg-amber-500 px-3 py-1">
+                    <Ionicons name="star" size={16} color="#fff" />
+                    <Text className="ml-1 text-sm font-bold text-white">
+                      {movie.vote_average.toFixed(1)}
+                    </Text>
+                  </View>
+                  <Text className="text-sm text-gray-200">{movie.vote_count} votes</Text>
+                </View>
+
+                <View className="flex-row flex-wrap items-center">
+                  <Text className="mr-4 text-sm text-gray-200">{year}</Text>
+                  <Text className="mr-4 text-sm text-gray-200">{runtime}</Text>
+                  <Text className="text-sm text-gray-200">
+                    {movie.original_language.toUpperCase()}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View className="relative -mt-6 rounded-t-3xl bg-white">
+          {movie.genres.length > 0 && (
+            <View className="p-6 pb-4">
+              <Text className="mb-3 text-lg font-bold text-gray-900">Genres</Text>
+              <View className="flex-row flex-wrap">
+                {movie.genres.map((genre) => (
+                  <View key={genre.id} className="mb-2 mr-2 rounded-full bg-blue-100 px-4 py-2">
+                    <Text className="text-sm font-medium text-blue-800">{genre.name}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          <View className="px-6 pb-6">
+            <Text className="mb-3 text-lg font-bold text-gray-900">Overview</Text>
+            <Text className="text-base leading-7 text-gray-700">
+              {movie.overview || 'No overview available.'}
+            </Text>
+          </View>
+
+          <View className="px-6 pb-8">
+            <Text className="mb-4 text-lg font-bold text-gray-900">Details</Text>
+
+            <View>
+              <View className="flex-row items-center justify-between border-b border-gray-100 py-3">
+                <Text className="text-sm font-medium text-gray-600">Release Date</Text>
+                <Text className="text-sm text-gray-900">{movie.release_date || 'N/A'}</Text>
+              </View>
+
+              <View className="flex-row items-center justify-between border-b border-gray-100 py-3">
+                <Text className="text-sm font-medium text-gray-600">Runtime</Text>
+                <Text className="text-sm text-gray-900">{runtime}</Text>
+              </View>
+
+              <View className="flex-row items-center justify-between border-b border-gray-100 py-3">
+                <Text className="text-sm font-medium text-gray-600">Language</Text>
+                <Text className="text-sm text-gray-900">
+                  {movie.original_language.toUpperCase()}
                 </Text>
               </View>
 
-              <Text className="mb-1 text-sm text-gray-600">
-                <Text className="font-semibold">Year:</Text> {year}
-              </Text>
-
-              <Text className="mb-1 text-sm text-gray-600">
-                <Text className="font-semibold">Runtime:</Text> {runtime}
-              </Text>
-
-              <Text className="mb-1 text-sm text-gray-600">
-                <Text className="font-semibold">Language:</Text>{' '}
-                {movie.original_language.toUpperCase()}
-              </Text>
-
-              {movie.genres.length > 0 && (
-                <View className="mt-2 flex-row flex-wrap">
-                  {movie.genres.map((genre) => (
-                    <View key={genre.id} className="mb-2 mr-2 rounded-full bg-blue-100 px-3 py-1">
-                      <Text className="text-xs text-blue-800">{genre.name}</Text>
-                    </View>
-                  ))}
+              <View className="flex-row items-center justify-between py-3">
+                <Text className="text-sm font-medium text-gray-600">Rating</Text>
+                <View className="flex-row items-center">
+                  <Ionicons name="star" size={16} color="#f59e0b" />
+                  <Text className="ml-1 text-sm font-medium text-gray-900">
+                    {movie.vote_average.toFixed(1)} / 10
+                  </Text>
                 </View>
-              )}
+              </View>
             </View>
-          </View>
-
-          <View className="mb-4">
-            <Text className="mb-2 text-lg font-semibold text-gray-900">Overview</Text>
-            <Text className="leading-6 text-gray-700">
-              {movie.overview || 'No overview available.'}
-            </Text>
           </View>
         </View>
       </ScrollView>

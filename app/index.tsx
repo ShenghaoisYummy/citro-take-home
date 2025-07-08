@@ -33,35 +33,32 @@ export default function HomeScreen() {
 
   return (
     <Container>
-      <Stack.Screen options={{ title: 'Movie Search' }} />
-
-      <SearchInput onSearch={handleSearch} isLoading={isLoading} />
-
-      {!searchQuery && (
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-xl text-gray-500">Search for movies above</Text>
-        </View>
-      )}
-
-      {searchQuery && isLoading && <Loading message="Searching movies..." />}
-
-      {searchQuery && error && (
-        <Error message="Failed to search movies. Please try again." onRetry={refetch} />
-      )}
-
-      {searchQuery && data && (
-        <FlatList
-          data={data.results}
-          renderItem={renderMovieItem}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-lg text-gray-500">No movies found</Text>
-            </View>
-          }
-        />
-      )}
+      <React.Fragment>
+        <Stack.Screen options={{ title: 'Movie Search' }} />
+        <SearchInput onSearch={handleSearch} isLoading={isLoading} />
+        {!searchQuery && (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-xl text-gray-500">Search for movies above</Text>
+          </View>
+        )}
+        {searchQuery && isLoading && <Loading message="Searching movies..." />}
+        {searchQuery && error && (
+          <Error message="Failed to search movies. Please try again." onRetry={refetch} />
+        )}
+        {searchQuery && data && (
+          <FlatList
+            data={data.results}
+            renderItem={renderMovieItem}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View className="flex-1 items-center justify-center">
+                <Text className="text-lg text-gray-500">No movies found</Text>
+              </View>
+            }
+          />
+        )}
+      </React.Fragment>
     </Container>
   );
 }
