@@ -1,5 +1,7 @@
 # Movie Search App 🎬
 
+## This project is part of a take-home coding challenge.
+
 A modern, cross-platform movie search application built with **React Native (Expo)** and **TypeScript**. Search for movies, view detailed information, and discover your next favorite film with a beautiful, responsive interface.
 
 ## ✨ Features
@@ -165,8 +167,6 @@ npm run test:coverage  # Generate coverage report
 # Build
 npm run prebuild       # Prepare for native build
 ```
-
-This project is part of a take-home coding challenge.
 
 ---
 
