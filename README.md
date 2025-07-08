@@ -65,7 +65,7 @@ A modern, cross-platform movie search application built with **React Native (Exp
 
    ```bash
    git clone <repository-url>
-   cd eng-take-home
+   cd yourfolder/citro-take-home
    ```
 
 2. **Install dependencies**:
