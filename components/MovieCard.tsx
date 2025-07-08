@@ -10,7 +10,14 @@ interface MovieCardProps {
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress }) => {
   const posterUrl = movieService.getImageUrl(movie.poster_path, 'w500');
-  const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+  // Determine release year, handling invalid or missing dates gracefully
+  let year: string | number = 'N/A';
+  if (movie.release_date) {
+    const parsed = new Date(movie.release_date);
+    if (!isNaN(parsed.getTime())) {
+      year = parsed.getFullYear();
+    }
+  }
 
   const cardShadow = Platform.select({
     web: {
